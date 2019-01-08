@@ -1,4 +1,4 @@
-package com.example.yervand.puzzlelistviewsample
+package com.example.yervand.puzzlelistviewsample.view
 
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -10,6 +10,9 @@ import android.text.SpannableStringBuilder
 import android.text.StaticLayout
 import android.view.View
 import android.widget.TextView
+import com.example.yervand.puzzlelistviewsample.R
+import com.example.yervand.puzzlelistviewsample.util.TextSurroundSpan
+import com.example.yervand.puzzlelistviewsample.util.convertDpToPixel
 
 class CustomItemDecoration(var dataSet: List<String>) : RecyclerView.ItemDecoration() {
     init {
@@ -65,7 +68,9 @@ class CustomItemDecoration(var dataSet: List<String>) : RecyclerView.ItemDecorat
                 spannableString.setSpan(
                     TextSurroundSpan(
                         1,
-                        (tempLayout.getLineRight(lineCount - 1) + convertDpToPixel(currentChild.lineSpacingMultiplier)).toInt()
+                        (tempLayout.getLineRight(lineCount - 1) + convertDpToPixel(
+                            currentChild.lineSpacingMultiplier
+                        )).toInt()
                     ),
                     0,
                     spannableString.length,
@@ -74,14 +79,14 @@ class CustomItemDecoration(var dataSet: List<String>) : RecyclerView.ItemDecorat
             }
             nextChild.text = spannableString
 //            val params = LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.WRAP_CONTENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT
-//            ).apply {
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//                    topMargin = -currentChild.lineHeight
-//                }
-//            }
-//            nextChild.layoutParams = params
+////                LinearLayout.LayoutParams.WRAP_CONTENT,
+////                LinearLayout.LayoutParams.WRAP_CONTENT
+////            ).apply {
+////                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+////                    topMargin = -currentChild.lineHeight
+////                }
+////            }
+////            nextChild.layoutParams = params
         }
     }
 }

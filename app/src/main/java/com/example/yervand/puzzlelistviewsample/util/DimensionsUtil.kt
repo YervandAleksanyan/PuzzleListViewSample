@@ -1,4 +1,4 @@
-package com.example.yervand.puzzlelistviewsample
+package com.example.yervand.puzzlelistviewsample.util
 
 import android.content.res.Resources
 

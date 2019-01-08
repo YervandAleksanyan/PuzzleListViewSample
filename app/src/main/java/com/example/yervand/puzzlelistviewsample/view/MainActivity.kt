@@ -1,4 +1,4 @@
-package com.example.yervand.puzzlelistviewsample
+package com.example.yervand.puzzlelistviewsample.view
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -17,6 +17,11 @@ import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.yervand.puzzlelistviewsample.R
+import com.example.yervand.puzzlelistviewsample.db.model.CodexEntity
+import com.example.yervand.puzzlelistviewsample.util.TextSurroundSpan
+import com.example.yervand.puzzlelistviewsample.util.convertDpToPixel
+import io.realm.Realm
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,12 +43,26 @@ class MainActivity : AppCompatActivity() {
             "<font color=\"red\">Unpleasant nor diminution excellence</font> apartments imprudence the met new. Draw part them he an to he roof only. Music leave say doors him. Tore bred form if sigh case as do. Staying he no looking if do opinion. Sentiments way understood end partiality and his.",
             "<u>Style</u> never <i>The lightning</i> and those among great. At no or september sportsmen he perfectly happiness attending. Depending listening delivered off new she procuring satisfied sex existence. Person plenty answer to exeter it if. Law use assistance especially resolution cultivated did out sentiments unsatiable. Way necessary had intention happiness but september delighted his curiosity. Furniture furnished or on strangers neglected remainder engrossed.",
             "Carried <img src=\"stack.jpg\" />nothing on am warrant towards. Polite in of in oh needed itself silent course. Assistance travelling so especially do prosperous appearance mr no celebrated. Wanted easily in my called formed suffer. Songs hoped sense as taken ye mirth at. Believe fat how six drawing pursuit minutes far. Same do seen head am part it dear open to. Whatever may scarcely judgment had.",
+            "Promotion an ourselves <small>up otherwise my</small   >. High what each snug rich far yet easy. In companions inhabiting mr principles at insensible do. Heard their sex hoped enjoy vexed child for. Prosperous so occasional assistance it discovered especially no. Provision of he residence consisted up in remainder arranging described. Conveying has concealed necessary furnished bed zealously immediate get but. Terminated as middletons or by instrument. Bred do four so your felt with. No shameless principle dependent household do.",
+            "<u>Style</u> never <i>The lightning</i> and those among great. At no or september sportsmen he perfectly happiness attending. Depending listening delivered off new she procuring satisfied sex existence. Person plenty answer to exeter it if. Law use assistance especially resolution cultivated did out sentiments unsatiable. Way necessary had intention happiness but september delighted his curiosity. Furniture furnished or on strangers neglected remainder engrossed.",
+            "Carried <img src=\"stack.jpg\" />nothing on am warrant towards. Polite in of in oh needed itself silent course. Assistance travelling so especially do prosperous appearance mr no celebrated. Wanted easily in my called formed suffer. Songs hoped sense as taken ye mirth at. Believe fat how six drawing pursuit minutes far. Same do seen head am part it dear open to. Whatever may scarcely judgment had.",
+            "Promotion an ourselves <small>up otherwise my</small   >. High what each snug rich far yet easy. In companions inhabiting mr principles at insensible do. Heard their sex hoped enjoy vexed child for. Prosperous so occasional assistance it discovered especially no. Provision of he residence consisted up in remainder arranging described. Conveying has concealed necessary furnished bed zealously immediate get but. Terminated as middletons or by instrument. Bred do four so your felt with. No shameless principle dependent household do.",
+            "<u>Style</u> never <i>The lightning</i> and those among great. At no or september sportsmen he perfectly happiness attending. Depending listening delivered off new she procuring satisfied sex existence. Person plenty answer to exeter it if. Law use assistance especially resolution cultivated did out sentiments unsatiable. Way necessary had intention happiness but september delighted his curiosity. Furniture furnished or on strangers neglected remainder engrossed.",
+            "Carried <img src=\"stack.jpg\" />nothing on am warrant towards. Polite in of in oh needed itself silent course. Assistance travelling so especially do prosperous appearance mr no celebrated. Wanted easily in my called formed suffer. Songs hoped sense as taken ye mirth at. Believe fat how six drawing pursuit minutes far. Same do seen head am part it dear open to. Whatever may scarcely judgment had.",
             "Promotion an ourselves <small>up otherwise my</small   >. High what each snug rich far yet easy. In companions inhabiting mr principles at insensible do. Heard their sex hoped enjoy vexed child for. Prosperous so occasional assistance it discovered especially no. Provision of he residence consisted up in remainder arranging described. Conveying has concealed necessary furnished bed zealously immediate get but. Terminated as middletons or by instrument. Bred do four so your felt with. No shameless principle dependent household do."
+
         )
+        val realm = Realm.getDefaultInstance()
+//        dataSet = getDataSet(
+//            realm
+//                .where(CodexEntity::class.java)
+//                .limit(5)
+//                .findAll()
+//        )
         parent = findViewById(R.id.parent)
         recyclerView = findViewById(R.id.recycler_view)
         val adapter = Adapter()
-        adapter.dataSet = dataSet.toList()
+        adapter.dataSet = dataSet
         val chipsLayoutManager = LinearLayoutManager(this)
         recyclerView!!.addItemDecoration(CustomItemDecoration(dataSet))
         recyclerView!!.layoutManager = chipsLayoutManager
@@ -55,7 +74,6 @@ class MainActivity : AppCompatActivity() {
 //        concatBtn!!.setOnClickListener {
 //            concatenateTexts()
 //        }
-
     }
 
     inner class Adapter : RecyclerView.Adapter<Adapter.MyViewHolder>() {
@@ -71,7 +89,10 @@ class MainActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(viewHolder: MyViewHolder, position: Int) {
             val textData = dataSet[position]
-            viewHolder.textView.text = Html.fromHtml(textData, ImageGetter(this@MainActivity), null)
+            viewHolder.textView.text = Html.fromHtml(
+                textData,
+                ImageGetter(this@MainActivity), null
+            )
         }
 
 
@@ -130,13 +151,18 @@ class MainActivity : AppCompatActivity() {
             }
             val lineCount = tempLayout!!.lineCount
             val spannableString =
-                Html.fromHtml(dataSet[index + 1], ImageGetter(this@MainActivity), null) as SpannableStringBuilder
+                Html.fromHtml(
+                    dataSet[index + 1],
+                    ImageGetter(this@MainActivity), null
+                ) as SpannableStringBuilder
             Log.i("tag", dataSet[index + 1])
             if (SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 spannableString.setSpan(
                     TextSurroundSpan(
                         1,
-                        (tempLayout.getLineRight(lineCount - 1) + convertDpToPixel(currentChild.lineSpacingMultiplier)).toInt()
+                        (tempLayout.getLineRight(lineCount - 1) + convertDpToPixel(
+                            currentChild.lineSpacingMultiplier
+                        )).toInt()
                     ),
                     0,
                     spannableString.length,
@@ -162,11 +188,22 @@ class MainActivity : AppCompatActivity() {
         dataSet.forEach {
             parent!!.addView(TextView(this)
                 .apply {
-                    text = Html.fromHtml(it, ImageGetter(this@MainActivity), null)
+                    text = Html.fromHtml(
+                        it,
+                        ImageGetter(this@MainActivity), null
+                    )
                     includeFontPadding = false
                 })
             Log.i("tag", it)
         }
+    }
+
+
+    private fun getDataSet(list: List<CodexEntity>): List<String> {
+        return list
+            .map { it ->
+                "${it.NumberString}<sub>${it.Text}</sub>"
+            }.toList()
     }
 }
 
