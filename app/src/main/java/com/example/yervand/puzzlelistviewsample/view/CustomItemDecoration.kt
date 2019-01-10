@@ -8,6 +8,7 @@ import android.text.Html
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.StaticLayout
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.example.yervand.puzzlelistviewsample.R
@@ -15,14 +16,12 @@ import com.example.yervand.puzzlelistviewsample.util.TextSurroundSpan
 import com.example.yervand.puzzlelistviewsample.util.convertDpToPixel
 
 class CustomItemDecoration(var dataSet: List<String>) : RecyclerView.ItemDecoration() {
-    init {
-
-    }
 
     override fun getItemOffsets(
         outRect: Rect, view: View,
         parent: RecyclerView, state: RecyclerView.State
     ) {
+        Log.i("tag", "getItemOffsets")
         with(outRect) {
             if (parent.getChildAdapterPosition(view) != 0) {
                 top = -(view.findViewById<TextView>(R.id.text)).lineHeight
@@ -31,8 +30,10 @@ class CustomItemDecoration(var dataSet: List<String>) : RecyclerView.ItemDecorat
     }
 
     var index = 0
-    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
 
+    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+//        super.onDraw(c, parent, state)
+        Log.i("tag", "onDrawOver")
         for (i in 0 until parent.childCount - 1) {
             val currentChild = (parent.getChildAt(i)).findViewById<TextView>(R.id.text)
             val nextChild = (parent.getChildAt(i + 1)).findViewById<TextView>(R.id.text)
@@ -78,15 +79,6 @@ class CustomItemDecoration(var dataSet: List<String>) : RecyclerView.ItemDecorat
                 )
             }
             nextChild.text = spannableString
-//            val params = LinearLayout.LayoutParams(
-////                LinearLayout.LayoutParams.WRAP_CONTENT,
-////                LinearLayout.LayoutParams.WRAP_CONTENT
-////            ).apply {
-////                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-////                    topMargin = -currentChild.lineHeight
-////                }
-////            }
-////            nextChild.layoutParams = params
         }
     }
 }
