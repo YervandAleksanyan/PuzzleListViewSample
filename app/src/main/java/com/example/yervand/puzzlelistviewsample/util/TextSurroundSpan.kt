@@ -21,9 +21,11 @@ internal class TextSurroundSpan(private val lines: Int, private val margin: Int)
         top: Int, baseline: Int, bottom: Int, text: CharSequence,
         start: Int, end: Int, first: Boolean, layout: Layout
     ) {
+
     }
 
     override fun getLeadingMarginLineCount(): Int {
         return lines
     }
+
 }

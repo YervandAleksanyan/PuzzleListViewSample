@@ -9,15 +9,21 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.*
+import android.text.Html
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.StaticLayout
 import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.yervand.puzzlelistviewsample.R
 import com.example.yervand.puzzlelistviewsample.db.model.CodexEntity
 import com.example.yervand.puzzlelistviewsample.util.TextSurroundSpan
 import com.example.yervand.puzzlelistviewsample.util.convertDpToPixel
+import io.realm.Realm
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,8 +32,8 @@ class MainActivity : AppCompatActivity() {
     private var textSecond: TextView? = null
     private var concatBtn: TextView? = null
     private var parent: LinearLayout? = null
-    private var recyclerView: RecyclerView? = null
-
+    private lateinit var recyclerView: RecyclerView
+    private var adapter: SpannableMergeAdapter? = null
 
     private lateinit var dataSet: List<String>
 
@@ -49,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             "Promotion an ourselves <small>up otherwise my</small   >. High what each snug rich far yet easy. In companions inhabiting mr principles at insensible do. Heard their sex hoped enjoy vexed child for. Prosperous so occasional assistance it discovered especially no. Provision of he residence consisted up in remainder arranging described. Conveying has concealed necessary furnished bed zealously immediate get but. Terminated as middletons or by instrument. Bred do four so your felt with. No shameless principle dependent household do."
 
         )
-//        val realm = Realm.getDefaultInstance()
+        val realm = Realm.getDefaultInstance()
 //        dataSet = getDataSet(
 //            realm
 //                .where(CodexEntity::class.java)
@@ -58,12 +64,10 @@ class MainActivity : AppCompatActivity() {
 //        )
         parent = findViewById(R.id.parent)
         recyclerView = findViewById(R.id.recycler_view)
-        val adapter = Adapter()
-        adapter.dataSet = dataSet
+
         val chipsLayoutManager = LinearLayoutManager(this)
-//        recyclerView!!.addItemDecoration(CustomItemDecoration(dataSet))
-        recyclerView!!.layoutManager = chipsLayoutManager
-        recyclerView!!.adapter = adapter
+        recyclerView.addItemDecoration(CustomItemDecoration())
+        recyclerView.layoutManager = chipsLayoutManager
 //        generateListView(dataSet)
 ////        textFirst = findViewById(R.id.textView)
 ////        textSecond = findViewById(R.id.text_2)
@@ -71,97 +75,25 @@ class MainActivity : AppCompatActivity() {
 ////        concatBtn!!.setOnClickListener {
 ////            concatenateTexts()
 //        }
-    }
 
-    inner class Adapter : RecyclerView.Adapter<Adapter.MyViewHolder>() {
-        var dataSet: List<String> = ArrayList()
-        private var lastIndex = -1
-        private var firstMargin = 0
-        private var lastMargin = 0
+        parent!!.viewTreeObserver.addOnGlobalLayoutListener {
 
-        override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): MyViewHolder {
-            val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.cell_text, parent, false)
-            return MyViewHolder(view)
-        }
-
-        override fun getItemCount(): Int = dataSet.size
-
-
-        override fun onBindViewHolder(viewHolder: MyViewHolder, position: Int) {
-            val textData = dataSet[position]
-            viewHolder.textView.text = Html.fromHtml(
-                textData,
-                ImageGetter(this@MainActivity), null
-            )
-            viewHolder.textView.measure(
-                View.MeasureSpec.makeMeasureSpec(parent!!.width, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-            )
-            val text = viewHolder.textView.text
-            var tempLayout: StaticLayout? = null
-
-            when {
-                SDK_INT >= M -> tempLayout = StaticLayout.Builder
-                    .obtain(
-                        text,
-                        0,
-                        text.length,
-                        viewHolder.textView.paint,
-                        viewHolder.textView.measuredWidth
-                    )
-                    .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                    .setLineSpacing(viewHolder.textView.lineSpacingExtra, viewHolder.textView.lineSpacingMultiplier)
-                    .setIncludePad(viewHolder.textView.includeFontPadding)
-                    .setBreakStrategy(viewHolder.textView.breakStrategy)
-                    .setHyphenationFrequency(viewHolder.textView.hyphenationFrequency)
-                    .build()
-                else -> if (SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    tempLayout = StaticLayout(
-                        text,
-                        viewHolder.textView.paint,
-                        text.length,
-                        Layout.Alignment.ALIGN_NORMAL,
-                        viewHolder.textView.lineSpacingMultiplier,
-                        viewHolder.textView.lineSpacingExtra,
-                        viewHolder.textView.includeFontPadding
-                    )
-                }
-            }
-            val lineCount = tempLayout!!.lineCount
-            val marginByDirection = if (position > lastIndex) {
-                lastMargin
-            } else {
-                firstMargin
-            }
-            val spannableString =
-                Html.fromHtml(
-                    textData,
-                    ImageGetter(this@MainActivity), null
-                ) as SpannableStringBuilder
-            if (SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                spannableString.setSpan(
-                    TextSurroundSpan(
-                        1,
-                        (marginByDirection + convertDpToPixel(
-                            viewHolder.textView.lineSpacingMultiplier
-                        )).toInt()
-                    ),
-                    0,
-                    spannableString.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-            firstMargin = tempLayout.getLineLeft(0).toInt()
-            lastMargin = tempLayout.getLineRight(lineCount - 1).toInt()
-            lastIndex = position
-            viewHolder.textView.text = spannableString
-        }
-
-
-        inner class MyViewHolder(item: View) : RecyclerView.ViewHolder(item) {
-            val textView = item.findViewById<TextView>(R.id.text)
+            SetupAdapter()
         }
     }
+
+    private fun SetupAdapter() {
+        var width = -1
+        adapter?.let {
+            width = it.parentWidth
+        }
+        if (width != parent!!.width) {
+            width = parent!!.width
+            adapter = SpannableMergeAdapter(width, dataSet)
+            recyclerView.adapter = adapter
+        }
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
@@ -262,12 +194,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun getDataSet(list: List<CodexEntity>): List<String> {
         return list
             .map { it ->
                 "${it.NumberString}<sub>${it.Text}</sub>"
-            }.toList()
+            }
     }
 }
 
