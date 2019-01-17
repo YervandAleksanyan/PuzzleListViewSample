@@ -6,5 +6,5 @@ import android.widget.TextView
 import com.example.yervand.puzzlelistviewsample.R
 
 class SpannableViewHolder(item: View) : RecyclerView.ViewHolder(item) {
-    val textView = item.findViewById<TextView>(R.id.text)
+    var textView = item.findViewById<TextView>(R.id.text)
 }
