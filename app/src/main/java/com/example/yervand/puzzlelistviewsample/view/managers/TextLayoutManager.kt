@@ -2,14 +2,18 @@ package com.example.yervand.puzzlelistviewsample.view.managers
 
 import android.os.Build
 import android.text.*
+import android.view.View
 import android.widget.TextView
 import com.example.yervand.puzzlelistviewsample.util.TextSurroundSpan
 import com.example.yervand.puzzlelistviewsample.util.convertDpToPixel
 import kotlin.math.ceil
 
-class TextLayoutManager(val width: Int, val manager: TextEntityManager) {
-    private val cachedMeasurements = HashMap<Int, SpannableStringBuilder>()
-    fun getSpannableStringForTextEntity(textEntityId: Int, textView: TextView): SpannableStringBuilder {
+class TextLayoutManager(val width: Int, private val manager: TextEntityManager) {
+    private val cachedMeasurements = HashMap<Int, SpannableStringModel>()
+    val items = manager.getAll()
+
+
+    fun getSpannableStringModelForTextEntity(textEntityId: Int, textView: View): SpannableStringModel {
         val margin = cachedMeasurements[textEntityId]
         margin?.let { return it }
         calculateParagraphMeasurements(textEntityId, textView)
@@ -18,7 +22,8 @@ class TextLayoutManager(val width: Int, val manager: TextEntityManager) {
 
     private var startMargin = 0
 
-    private fun calculateParagraphMeasurements(textEntityId: Int, textView: TextView) {
+    private fun calculateParagraphMeasurements(textEntityId: Int, textView: View) {
+        textView as TextView
         val paragraph = manager.getTextEntitiesInSameParagraph(textEntityId)
         val entity = paragraph.find { it.id == textEntityId }
         val text = entity!!.text
@@ -71,8 +76,9 @@ class TextLayoutManager(val width: Int, val manager: TextEntityManager) {
                 )
             }
         }
+
         val lineCount = tempLayout!!.lineCount
         startMargin = ceil(tempLayout.getLineRight(lineCount - 1)).toInt()
-        cachedMeasurements[textEntityId] = spannableString
+        cachedMeasurements[textEntityId] = SpannableStringModel(spannableString, startMargin, -textView.lineHeight)
     }
 }

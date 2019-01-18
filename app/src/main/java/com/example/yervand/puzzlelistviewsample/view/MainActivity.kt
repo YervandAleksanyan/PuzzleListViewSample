@@ -9,7 +9,6 @@ import android.widget.TextView
 import com.example.yervand.puzzlelistviewsample.R
 import com.example.yervand.puzzlelistviewsample.view.managers.TextEntityManager
 import com.example.yervand.puzzlelistviewsample.view.managers.TextLayoutManager
-import io.realm.Realm
 
 
 class MainActivity : AppCompatActivity() {
@@ -21,28 +20,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private var adapter: SpannableMergeAdapter? = null
     private var textEntityManager = TextEntityManager()
-
-    private lateinit var dataSet: List<String>
+    private lateinit var textLayoutManager: TextLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val realm = Realm.getDefaultInstance()
-//        dataSet = getDataSet(
-//            realm
-//                .where(CodexEntity::class.java)
-//                .limit(10)
-//                .findAll()
-//        )
         parent = findViewById(R.id.parent)
         recyclerView = findViewById(R.id.recycler_view)
 
         val chipsLayoutManager = LinearLayoutManager(this)
-        recyclerView.addItemDecoration(CustomItemDecoration(textEntityManager.getAll()))
         recyclerView.layoutManager = chipsLayoutManager
         parent!!.viewTreeObserver.addOnGlobalLayoutListener {
             setupAdapter()
         }
+
     }
 
     private fun setupAdapter() {
@@ -52,11 +43,13 @@ class MainActivity : AppCompatActivity() {
         }
         if (width != parent!!.width) {
             width = parent!!.width
+            textLayoutManager = TextLayoutManager(
+                width,
+                textEntityManager
+            )
+            recyclerView.addItemDecoration(CustomItemDecoration(textLayoutManager))
             adapter = SpannableMergeAdapter(
-                TextLayoutManager(
-                    width,
-                    textEntityManager
-                )
+                textLayoutManager
             )
             recyclerView.adapter = adapter
         }

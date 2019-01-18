@@ -7,4 +7,5 @@ import com.example.yervand.puzzlelistviewsample.R
 
 class SpannableViewHolder(item: View) : RecyclerView.ViewHolder(item) {
     var textView = item.findViewById<TextView>(R.id.text)
+
 }

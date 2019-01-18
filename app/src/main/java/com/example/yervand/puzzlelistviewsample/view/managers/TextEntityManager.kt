@@ -1,12 +1,16 @@
 package com.example.yervand.puzzlelistviewsample.view.managers
 
+import com.example.yervand.puzzlelistviewsample.db.model.CodexEntity
 import com.example.yervand.puzzlelistviewsample.db.model.TextEntity
+import io.realm.Realm
 import java.util.*
 import kotlin.collections.ArrayList
 
 class TextEntityManager {
     private var items: ArrayList<TextEntity> = ArrayList()
-    val source = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    private val realm = Realm.getDefaultInstance()
+
+    private val source = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     init {
         initializeItems()
@@ -35,22 +39,21 @@ class TextEntityManager {
     }
 
     private fun initializeItems() {
-        repeat(50) {
+        val realmResults = realm
+            .where(CodexEntity::class.java)
+            .findAll()
+        repeat(realmResults.size) {
             val paragraphPos = (it % 5 == 0)
             val color = if (paragraphPos) {
                 "red"
             } else {
                 "blue"
             }
+            val codexEntity = realmResults[it]
             items.add(
                 TextEntity(
                     it,
-                    "<font color=\"$color\"><big>$it</big></font>${GenerateRandomString.randomString(
-                        kotlin.random.Random.nextInt(
-                            200,
-                            500
-                        )
-                    )}",
+                    "<font color=\"$color\">${codexEntity?.NumberString}</font>${codexEntity?.Text}",
                     paragraphPos
                 )
             )
