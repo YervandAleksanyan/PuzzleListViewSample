@@ -1,4 +1,4 @@
-package com.example.yervand.puzzlelistviewsample
+package com.example.yervand.puzzlelistviewsample.view.managers
 
 import android.os.Build
 import android.text.*

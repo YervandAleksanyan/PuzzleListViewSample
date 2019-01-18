@@ -1,4 +1,4 @@
-package com.example.yervand.puzzlelistviewsample
+package com.example.yervand.puzzlelistviewsample.db.model
 
 data class TextEntity(
     var id: Int,

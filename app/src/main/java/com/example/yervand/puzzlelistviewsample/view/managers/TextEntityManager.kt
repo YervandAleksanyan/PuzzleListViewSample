@@ -1,5 +1,6 @@
-package com.example.yervand.puzzlelistviewsample
+package com.example.yervand.puzzlelistviewsample.view.managers
 
+import com.example.yervand.puzzlelistviewsample.db.model.TextEntity
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -44,7 +45,7 @@ class TextEntityManager {
             items.add(
                 TextEntity(
                     it,
-                    "<font color='$color'>$it</font>${GenerateRandomString.randomString(
+                    "<font color=\"$color\"><big>$it</big></font>${GenerateRandomString.randomString(
                         kotlin.random.Random.nextInt(
                             200,
                             500
@@ -67,7 +68,11 @@ class TextEntityManager {
                 if (i == 0) {
                     sb.append("$<b>START</b>")
                 }
-                sb.append("${DATA[RANDOM.nextInt(DATA.length)]}")
+                sb.append(
+                    "${DATA[RANDOM.nextInt(
+                        DATA.length
+                    )]}"
+                )
                 if (i == len - 1) {
                     sb.append("<b>END</b>")
                 }

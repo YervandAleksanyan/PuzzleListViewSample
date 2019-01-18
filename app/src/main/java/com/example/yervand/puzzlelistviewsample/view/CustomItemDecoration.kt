@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.example.yervand.puzzlelistviewsample.R
-import com.example.yervand.puzzlelistviewsample.TextEntity
+import com.example.yervand.puzzlelistviewsample.db.model.TextEntity
 
 class CustomItemDecoration(val dataSet: List<TextEntity>) : RecyclerView.ItemDecoration() {
 

@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.yervand.puzzlelistviewsample.R
-import com.example.yervand.puzzlelistviewsample.TextLayoutManager
+import com.example.yervand.puzzlelistviewsample.view.managers.TextLayoutManager
 
 class SpannableMergeAdapter(val textLayoutManager: TextLayoutManager) :
     RecyclerView.Adapter<SpannableViewHolder>() {
