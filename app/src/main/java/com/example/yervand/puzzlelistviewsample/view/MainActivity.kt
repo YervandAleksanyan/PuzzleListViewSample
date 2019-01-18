@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
             )
             recyclerView.addItemDecoration(CustomItemDecoration(textLayoutManager))
             adapter = SpannableMergeAdapter(
+                this,
                 textLayoutManager
             )
             recyclerView.adapter = adapter

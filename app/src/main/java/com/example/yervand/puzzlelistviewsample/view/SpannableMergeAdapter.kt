@@ -1,16 +1,18 @@
 package com.example.yervand.puzzlelistviewsample.view
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
+import android.view.MotionEvent
 import android.view.ViewGroup
+import android.widget.Toast
 import com.example.yervand.puzzlelistviewsample.R
 import com.example.yervand.puzzlelistviewsample.view.managers.TextLayoutManager
-import kotlinx.android.synthetic.main.cell_text.view.*
+import kotlin.math.abs
 
 
-class SpannableMergeAdapter(val textLayoutManager: TextLayoutManager) :
+class SpannableMergeAdapter(val context: Context, val textLayoutManager: TextLayoutManager) :
     RecyclerView.Adapter<SpannableViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): SpannableViewHolder {
@@ -20,24 +22,39 @@ class SpannableMergeAdapter(val textLayoutManager: TextLayoutManager) :
 
     override fun getItemCount(): Int = textLayoutManager.items.size
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(viewHolder: SpannableViewHolder, position: Int) {
+
+        val spannableModel = textLayoutManager.getSpannableStringModelForTextEntity(position, viewHolder.textView)
         viewHolder.textView.text =
-                textLayoutManager.getSpannableStringModelForTextEntity(position, viewHolder.textView).spannableString
-        viewHolder.textView.setOnClickListener {
-            Log.i("tag", it.text.text.toString().substring(0, 2))
+                spannableModel.spannableString
+        viewHolder.textView.setOnTouchListener { view, motionEvent ->
+            if (motionEvent.action == MotionEvent.ACTION_UP) {
+                val touchY = (motionEvent.y).toInt()
+                val touchX = motionEvent.x.toInt()
+                if (touchY <= abs(spannableModel.topOffset) && touchY >= 0) {
+                    if (touchX <= spannableModel.startMargin) {
+                        Toast.makeText(
+                            context,
+                            textLayoutManager.items[position - 1].text.substring(19..20),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            textLayoutManager.items[position].text.substring(19..20),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        context,
+                        textLayoutManager.items[position].text.substring(19..20),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            true
         }
-    }
-
-    private fun isViewOverlapping(firstView: View, secondView: View): Boolean {
-        val firstPosition = IntArray(2)
-        val secondPosition = IntArray(2)
-
-        firstView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        firstView.getLocationOnScreen(firstPosition)
-        secondView.getLocationOnScreen(secondPosition)
-
-        val r = firstView.measuredWidth + firstPosition[0]
-        val l = secondPosition[0]
-        return r >= l && r != 0 && l != 0
     }
 }

@@ -68,7 +68,7 @@ class TextLayoutManager(val width: Int, private val manager: TextEntityManager) 
                 tempLayout = StaticLayout(
                     spannableString,
                     textView.paint,
-                    spannableString.length,
+                    width,
                     Layout.Alignment.ALIGN_NORMAL,
                     textView.lineSpacingMultiplier,
                     textView.lineSpacingExtra,
